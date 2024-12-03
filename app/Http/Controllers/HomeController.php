@@ -34,6 +34,12 @@ class HomeController extends Controller
         return view('home.index', ['actividades' => $actividades, 'categorias' => $categorias, 'fondos' => $fondo],);
     }
     
+    public function opciones(){
+        $user = auth()->user();
+        $fondo = Fondo::where('id', $user->id)->first();
+
+        return view('home.opciones', ['fondos' => $fondo]);
+    }
 
     public function login(){
 

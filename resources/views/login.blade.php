@@ -1,6 +1,29 @@
-@extends('templates.template')
 
-@section('contenido-principal')
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Proyecto tsi</title>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+
+
+    <script src="{{asset('js/agenda.js')}}" defer></script>
+    {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"> --}}
+    <link href="{{asset('css/bootstrap-custom2.min.css')}}" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+
+    
+
+  </head>
+  <body class="" style="">
 <div class="container-fluid min-vh-100 d-flex flex-column justify-content-lg-center bg-accent2" >
     <div class="row bg-accent2">
         <div class="col-6 g-4  offset-3 " >
@@ -80,4 +103,5 @@
         </div>
     </div>
 </div>
-@endsection
+</body>
+</html>

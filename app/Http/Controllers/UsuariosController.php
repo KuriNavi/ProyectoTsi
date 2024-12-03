@@ -57,6 +57,8 @@ class UsuariosController extends Controller
         }
 
     }
+
+
     public function logout(){
         Auth::logout();
         return redirect()->route('login');
@@ -66,6 +68,33 @@ class UsuariosController extends Controller
     public function destroy(Usuario $usuario){
         $usuario->delete();
         return redirect()->route('usuario.index');        
+    }
+
+    public function showChangePasswordForm() {
+        return view('usuario.cambiar-password');
+    }
+    
+    public function cambiarPassword(Request $request) {
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|min:6|confirmed',
+        ], [
+            'current_password.required' => 'Por favor, ingrese su contraseña actual.',
+            'new_password.required' => 'Por favor, ingrese una nueva contraseña.',
+            'new_password.min' => 'La nueva contraseña debe tener al menos 6 caracteres.',
+            'new_password.confirmed' => 'La confirmación de la nueva contraseña no coincide.',
+        ]);
+    
+        $usuario = Auth::user();
+    
+        if (!Hash::check($request->current_password, $usuario->password)) {
+            return back()->withErrors(['current_password' => 'La contraseña actual no es correcta']);
+        }
+    
+        $usuario->password = $request->new_password;
+        $usuario->save();
+    
+        return redirect()->route('home.opciones')->with('success', 'Contraseña actualizada con éxito ');
     }
 
 }
