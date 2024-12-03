@@ -14,18 +14,21 @@ class ActividadesController extends Controller
 
     
     public function index(Actividad $actividad){
-        $actividades = Actividad::where('id_usuario', Auth::id())->get()->map(function ($actividad) {
+        $actividades = Actividad::with('categoria')->get();
+
+        // Mapea las actividades para agregar los colores de las categorías
+        $eventos = $actividades->map(function ($actividad) {
             return [
-                'id' => $actividad->id,
                 'title' => $actividad->nombre_actividad,
+                'start' => $actividad->fecha_hora_inicio,
+                'end' => $actividad->fecha_hora_termino,
                 'description' => $actividad->descripcion,
-                'start' => Carbon::parse($actividad->fecha_hora_inicio)->toIso8601String(),
-                'end' => Carbon::parse($actividad->fecha_hora_termino)->toIso8601String(),
-                'recordatorio' => Carbon::parse($actividad->recordatorio)->toIso8601String()
+                'backgroundColor' => isset($actividad->categoria) ? '#' . $actividad->categoria->color : '#ffffff', // Color de la categoría o blanco por defecto
+                'borderColor' => isset($actividad->categoria) ? '#' . $actividad->categoria->color : '#000000', // Color de borde de la categoría o negro por defecto
             ];
         });
 
-        return response()->json($actividades);
+        return response()->json($eventos);
 
     } 
 
@@ -70,7 +73,50 @@ class ActividadesController extends Controller
 
     }
 
+    public function update(ActividadesRequest $request, $id)
+    {
+            // Buscar la actividad a editar
+            $actividad = Actividad::where('id', $id)
+                ->where('id_usuario', auth()->id()) // Asegurarse de que pertenece al usuario autenticado
+                ->first();
+
+            if (!$actividad) {
+                return response()->json(['error' => 'Actividad no encontrada'], 404);
+            }
+
+            // Validar que no se solapen horarios de otras actividades
+            $fechainicio = Carbon::parse($request->fecha_hora_inicio)->timezone('America/Santiago');
+            $fechacierre = Carbon::parse($request->fecha_hora_termino)->timezone('America/Santiago');
+            $actividadExistente = Actividad::where('id_usuario', auth()->id())
+            ->where(function($query) use ($fechainicio, $fechacierre) {
+                $query->where('fecha_hora_inicio', $fechainicio);
+                    
+            })
+            ->exists();
+
+            if ($actividadExistente) {
+                return response()->json(['errors' => ['fecha_hora_inicio' => ['Ya existe una actividad programada entre este horario']]], 422);
+            }
+            $recordatorio = null;
+            if ($request->recordatorio) {
+            
+            $recordatorio = Carbon::parse($request->fecha_hora_inicio)->copy()->subMinutes($request->recordatorio);
+            }
+
+            // Actualizar la actividad
+            $actividad->nombre_actividad = $request->nombre_actividad;
+            $actividad->descripcion = $request->descripcion;
+            $actividad->id_categoria = $request->id_categoria;
+            $actividad->fecha_hora_inicio = $fechainicio;
+            $actividad->fecha_hora_termino = $fechacierre;
+            $actividad->recordatorio = $recordatorio;
+            $actividad->save();
+
+            return response()->json(['success' => 'Actividad actualizada exitosamente']);
+    }
+
     public function destroy(Request $request){
+
         
     }
 
