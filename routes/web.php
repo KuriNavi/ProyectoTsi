@@ -22,6 +22,9 @@ route::middleware('auth')->group(function(){
 
     Route::get('/usuario/cambiar-password', [UsuariosController::class, 'showChangePasswordForm'])->name('usuario.cambiar-password');
     Route::post('/usuario/cambiar-password', [UsuariosController::class, 'changePassword'])->name('usuario.update-password');
+    Route::get('/usuario/cambiar-usuario', [UsuariosController::class, 'showChangeUsernameForm'])->name('usuario.cambiar-usuario');
+    Route::post('/usuario/cambiar-usuario', [UsuariosController::class, 'changeUsername'])->name('usuario.update-username');
+    Route::resource('categorias', CategoriasController::class);
 });
 
 

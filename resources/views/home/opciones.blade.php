@@ -59,10 +59,11 @@
         <div class="card mt-4">
             <div class="card-body">
                 <h5 class="card-title">Cambiar Usuario</h5>
-                <form>
+                <form method="POST" action="{{ route('usuario.update-username') }}">
+                    @csrf
                     <div class="form-group">
-                        <label for="username">Nuevo Usuario</label>
-                        <input type="text" class="form-control" id="username" placeholder="Introduce tu nuevo usuario">
+                        <label for="nuevo_usuario">Nuevo Usuario</label>
+                        <input type="text" class="form-control" id="nuevo_usuario" name="nuevo_usuario" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Cambiar Usuario</button>
                 </form>

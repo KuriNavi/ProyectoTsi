@@ -12,7 +12,12 @@ class Categoria extends Model
 
     protected $table='categorias';
     public $timestamps = false;
-
+    
+    protected $fillable = [
+        'id_usuario',
+        'nombre_categoria',
+        'color',
+    ];
     public function actividades():HasMany{
         return $this->hasMany(Actividad::class, 'id_categoria');
     }

@@ -97,4 +97,25 @@ class UsuariosController extends Controller
         return redirect()->route('home.opciones')->with('success', 'Contraseña actualizada con éxito ');
     }
 
+    public function showChangeUsernameForm() {
+        return view('usuario.cambiar-usuario');
+    }
+    
+    public function changeUsername(Request $request) {
+        $request->validate([
+            'nuevo_usuario' => 'required|min:3|max:20|unique:usuarios,nombre_usuario',
+        ], [
+            'nuevo_usuario.required' => 'Por favor, ingrese un nuevo nombre de usuario.',
+            'nuevo_usuario.min' => 'El nuevo nombre de usuario debe tener al menos 3 caracteres.',
+            'nuevo_usuario.max' => 'El nuevo nombre de usuario no puede exceder los 20 caracteres.',
+            'nuevo_usuario.unique' => 'Este nombre de usuario ya está en uso.',
+        ]);
+    
+        $usuario = Auth::user();
+        $usuario->nombre_usuario = $request->nuevo_usuario;
+        $usuario->save();
+    
+        return redirect()->route('home.opciones')->with('success', 'Nombre de usuario actualizado con éxito');
+    }
+
 }
