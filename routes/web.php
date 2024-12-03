@@ -14,6 +14,7 @@ route::middleware('auth')->group(function(){
     route::get('/usuarios/logout',[UsuariosController::class,"logout"])->name('usuarios.logout');
     route::post('/actividades', [ActividadesController::class, "store"])->name('actividades.store');
     route::get('/actividades/index', [ActividadesController::class, "index"])->name('actividades.index');
+    route::put('/actividades/{actividad}', [ActividadesController::class, "update"])->name('actividades.update');
     
     
 

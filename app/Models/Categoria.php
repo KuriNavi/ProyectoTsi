@@ -14,6 +14,6 @@ class Categoria extends Model
     public $timestamps = false;
 
     public function actividades():HasMany{
-        return $this->hasMany(Actividad::class);
+        return $this->hasMany(Actividad::class, 'id_categoria');
     }
 }
