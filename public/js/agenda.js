@@ -1,7 +1,5 @@
 
 document.addEventListener('DOMContentLoaded', function() {
-
-
                 let formulario = document.querySelector("form");
 
 
@@ -14,14 +12,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     headerToolbar: {
                         left: 'prev,next today',
                         center: 'title',
-                        right: 'dayGridMonth,timeGridDay,listDay'
+                        right: 'dayGridMonth,timeGridWeek,listDay'
                     },
                     buttonText: {
                         today: 'Hoy',
                         month: 'Mes',
                         week: 'Semana',
                         day: 'Día',
-                        list: 'Lista'
+                        list: 'Día'
                     },
                     locale: 'es', 
                     windowResize: function(view) {
@@ -65,13 +63,27 @@ document.addEventListener('DOMContentLoaded', function() {
                     },
 
                     events: {
+
                         url: "/actividades/index",
                         failure: function(error) {
                             console.error('Error cargando eventos:', error);
+                        },
+                        success: function(data) {
+                            console.log('Eventos cargados:', data);
                         }
-                    } ,
+                    },
                     
+
+                    eventContent: function(info) {
+                        // Esto elimina la numeración del evento
+                        return { html: info.event.title };
+                    },
+                    eventDidMount: function(info) {
+                        info.el.style.backgroundColor = info.event.extendedProps.backgroundColor;
+                        info.el.style.borderColor = info.event.extendedProps.borderColor;
+                    },
                     
+                
                 });
 
 
@@ -80,38 +92,60 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 document.getElementById("btnGuardar").addEventListener("click", function(){
                     var myModal = new bootstrap.Modal(document.getElementById('actividad'));
-                    event.preventDefault();
+                    event.preventDefault(); // Prevenir el envío del formulario inmediatamente
                     const datos= new FormData(formulario);
-                    console.log(datos);
+
+                    if (!formulario.checkValidity()) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Por favor, completa todos los campos correctamente.',
+                        });
+                        return; // Si la validación falla, no se envían los datos
+                    }
                     axios.post("/actividades", datos)
                         .then((respuesta) => {
-                            $("actividad").modal("hide");
-                            console.log("Actividad guardada correctamente:", respuesta.data);
                             myModal.hide();
+                            console.log("Actividad guardada correctamente:", respuesta.data);
+
+                            calendar.refetchEvents()
                             Swal.fire({
                                 icon: 'success',
-                                title: '¡Actividad guardada!',
-                                text: 'La actividad se ha guardado correctamente.',
-                                timer: 2000,
-                                showConfirmButton: false,
-                            });
+                                title: 'Actividad guardada correctamente',
+                                text: 'La actividad ha sido registrada con éxito.',
+                            })
+                           
                         })
                         .catch((error) => {
                             if (error.response) {
 
-                                console.error("Error al guardar la actividad:", error.response.data); 
+                                let errorMessage = '';
+                                if (error.response.data.errors) {
+                                    // Iteramos sobre los errores que nos manda Laravel
+                                    for (const [field, messages] of Object.entries(error.response.data.errors)) {
+                                    errorMessage += `${messages.join(', ')}\n`;
+                                }
+                                } else {
+                                    errorMessage = 'Hubo un problema al guardar la actividad.';
+                                }
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Error',
-                                    text: 'Hubo un problema al guardar la actividad.',
-                                });//errores de laravel
+                                    text: errorMessage, // Mostrar los mensajes de error aquí
+                                });
                             }
                         });
                                         
                     });
+                    document.getElementById('abrirModal').addEventListener('click', function () {
+                        // Asegúrate de que el formulario se limpie antes de abrir el modal
+                        formulario.reset();
+                    });
+
+                    
                     
                     
     
-                    // Refrescar el calendario para mostrar la nueva actividad
-                    calendar.refetchEvents()
+                    
+                    
 });

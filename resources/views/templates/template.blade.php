@@ -22,8 +22,8 @@
     
 
   </head>
-  <body class="">
-      <nav class="navbar p-0 navbar-expand-lg bg-body-tertiary bg-dark">
+  <body class="" style="">
+      <nav class="navbar p-0 navbar-expand-lg bg-body-tertiary bg-dark" >
         <div class="container-fluid d-flex justify-content-between bg-dark">
             {{-- Mostrar El Usuario, en caso de no estar logeado solo se mostrara un boton de login --}}
             @auth()

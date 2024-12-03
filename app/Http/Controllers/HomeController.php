@@ -13,17 +13,21 @@ class HomeController extends Controller
     public function index(){
         
         $user = auth()->user();
-        $fondo = Fondo::where('id', $user->id)->get();
+        $fondo = Fondo::where('id', $user->id)->first();
         
 
         $categorias = Categoria::where('id_usuario', $user->id) ->orWhere('id_usuario', 1)->get();
-        $actividades = Actividad::where('id_usuario', $user->id)->get()->map(function ($actividad) {
+        $actividades = Actividad::with('categoria')->where('id_usuario', $user->id)->get()->map(function ($actividad) {
+            \Log::info('Actividad color', ['color' => $actividad->categoria->color]);
+            $color = $actividad->categoria ? $actividad->categoria->color : null;
             return [
                 'id' => $actividad->id,
                 'title' => $actividad->nombre_actividad,
                 'description' => $actividad->descripcion,
                 'start' => \Carbon\Carbon::parse($actividad->fecha_hora_inicio)->toIso8601String(),
                 'end' => \Carbon\Carbon::parse($actividad->fecha_hora_termino)->toIso8601String(),
+                'backgroundColor' => '#' . $color,  // Acceder al color de la categoria
+                'borderColor' => '#' . $color,
             ];
         });
 

@@ -31,6 +31,8 @@ class ActividadesController extends Controller
 
 
     public function store(ActividadesRequest $request){
+        $fechainicio = Carbon::parse($request->fecha_hora_inicio)->timezone('America/Santiago');
+        $fechacierre = Carbon::parse($request->fecha_hora_termino)->timezone('America/Santiago');
 
         //hasta auth()->id() rescata las actividades del usuario logeado o autenticado
         //hasta el ($request) {} es un bloque anonimo que permite establecer multiples condiciones que deben cumplirse
@@ -38,33 +40,30 @@ class ActividadesController extends Controller
         //whereBetween verifica si un valor esta entre los valores que se le da
         // se usa para ambos tanto inicio como final, esto para que no se sobreponga una actividad con otra
         $actividadExistente = Actividad::where('id_usuario', auth()->id())
-        ->where(function($query) use ($request) {
-            $query->whereBetween('fecha_hora_inicio', [$request->fecha_hora_inicio, $request->fecha_hora_termino])
-                  ->orWhereBetween('fecha_hora_termino', [$request->fecha_hora_inicio, $request->fecha_hora_termino]);
+        ->where(function($query) use ($fechainicio, $fechacierre) {
+            $query->where('fecha_hora_inicio', $fechainicio);
                   
         })
         ->exists();
 
         if ($actividadExistente) {
-            return redirect()->back()->withErrors('Ya existe una actividad programada entre este horario');
+            return response()->json(['errors' => ['fecha_hora_inicio' => ['Ya existe una actividad programada entre este horario']]], 422);
         }
-
-        $actividad['id_usuario'] = auth()->id();
         $recordatorio = null;
         if ($request->recordatorio) {
         
          $recordatorio = Carbon::parse($request->fecha_hora_inicio)->copy()->subMinutes($request->recordatorio);
         }
 
-        $actividad=Actividad::create([
-        'nombre_actividad' => $request->nombre_actividad,
-        'id_categoria' => $request->id_categoria,
-        'descripcion' => $request->descripcion,
-        'fecha_hora_inicio' => Carbon::parse($request->fecha_hora_inicio),
-        'fecha_hora_termino' => Carbon::parse($request->fecha_hora_termino),
-        'recordatorio' => $recordatorio,
-        'id_usuario' => auth()->id(),
-        ]);
+        $actividad= new Actividad();
+        $actividad->id_usuario = auth()->id();
+        $actividad->nombre_actividad = $request->nombre_actividad;
+        $actividad->descripcion = $request->descripcion;
+        $actividad->id_categoria = $request->id_categoria;
+        $actividad->fecha_hora_inicio = Carbon::parse($request->fecha_hora_inicio)->timezone('America/Santiago');
+        $actividad->fecha_hora_termino = Carbon::parse($request->fecha_hora_termino)->timezone('America/Santiago');
+        $actividad->recordatorio = $recordatorio;
+        $actividad->save();
 
         return redirect()->route('home.index')->with('success', 'Actividad creada exitosamente!');
 

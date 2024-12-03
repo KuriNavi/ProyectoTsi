@@ -16,7 +16,7 @@ class Actividad extends Model
     public $timestamps = false;
 
     public function categoria():BelongsTo{
-        return $this->belongsTo(Categoria::class);
+        return $this->belongsTo(Categoria::class, 'id_categoria');
     }
 
     public function usuario():BelongsTo{
