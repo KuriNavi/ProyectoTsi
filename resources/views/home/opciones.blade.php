@@ -23,6 +23,19 @@
         <h1 class="text-center">Opciones de Usuario</h1>
         <div class="card mt-4">
             <div class="card-body">
+                <h5 class="card-title">Cambiar Usuario</h5>
+                <form method="POST" action="{{ route('usuario.update-username') }}">
+                    @csrf
+                    <div class="form-group">
+                        <label for="nuevo_usuario">Nuevo Usuario</label>
+                        <input type="text" class="form-control" id="nuevo_usuario" name="nuevo_usuario" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Cambiar Usuario</button>
+                </form>
+            </div>
+        </div>
+        <div class="card mt-4">
+            <div class="card-body">
                 <h5 class="card-title">Cambiar Contraseña</h5>
                 @if(session('success'))
                     <div class="alert alert-success">
@@ -53,19 +66,6 @@
                         <input type="password" class="form-control" id="new_password_confirmation" name="new_password_confirmation" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Cambiar Contraseña</button>
-                </form>
-            </div>
-        </div>
-        <div class="card mt-4">
-            <div class="card-body">
-                <h5 class="card-title">Cambiar Usuario</h5>
-                <form method="POST" action="{{ route('usuario.update-username') }}">
-                    @csrf
-                    <div class="form-group">
-                        <label for="nuevo_usuario">Nuevo Usuario</label>
-                        <input type="text" class="form-control" id="nuevo_usuario" name="nuevo_usuario" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Cambiar Usuario</button>
                 </form>
             </div>
         </div>

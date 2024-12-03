@@ -24,6 +24,7 @@ class CategoriasController extends Controller
         $categoria = new Categoria();
         $categoria->id_usuario = Auth::id();
         $categoria->nombre_categoria = $request->nombre_categoria;
+        // $categoria->color = $request->str_replace('#', '', $color);
         $categoria->color = $request->color;
         $categoria->save();
 

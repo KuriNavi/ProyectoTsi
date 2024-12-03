@@ -15,7 +15,7 @@ return new class extends Migration
             $table->integer('id')->autoIncrement();
             $table->integer('id_usuario');
             $table->string('nombre_categoria',30);
-            $table->string('color',6);
+            $table->string('color',7);
             $table->foreign('id_usuario')->references('id')->on('usuarios');
         });
     }
